@@ -28,7 +28,7 @@ cd /YourDisk/path/to/your/file
 ```
 loginmaster.py
 ```
-## Mac Os
+## Mac OS
 - Clone file loginmaster.py
 - Unpack it
 - Navigate to your unpacked file in file manager
@@ -39,5 +39,5 @@ loginmaster.py
 ```
 python3 loginmaster.py
 ```
-## IOS
+## IOS or Android
 buy a computer please
