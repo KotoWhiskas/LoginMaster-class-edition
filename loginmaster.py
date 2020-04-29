@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+#Импорты и defы
 import os
 import getpass
 def printcl(text): # функции - печать и запросс новой строки
@@ -7,6 +8,12 @@ def printcl(text): # функции - печать и запросс новой 
 def inputcl(text):
 	os.system('clear')
 	return input(text)
+def inputy(text=''):
+	cfg1 = inputcl("{text}Название файла и путь к нему(если не указывать путь то файл будет там где программа) - напр. <home/user/passw.txt>:  ")
+	cfg2 = inputcl("Запрещенные символы напр. < /;%] >: ")
+	cfg3 = inputcl("Минимальная и макс. длинна логина - <4-12> : ")
+	cfg4 = inputcl("Минимальная и макс. длинна пароля - <5-16> : ")
+#---------------------------------------------------------------------------------------------------------------------------------------------
 class LoginSystem:
 	flag = "" #Флаг
 	illegal = [] #Wait, that's illegal!
@@ -29,16 +36,16 @@ class LoginSystem:
 		if all([self.minlognum > self.maxlognum, self.minpasswnum > self.maxpasswnum]): #проверяет все ли правильно там
 			raise # прост вызывает ошибку
 		open(self.stor, 'a+') #создает файл если такого не существует
-	def register(self, opt): # регистрация (opt - опция)
+	def register(self, opt): # регистрация (opt - опция: True - логин, False - пароль)
 			somefile = open(self.stor, "r+")
 			self.flag = ''
 			myfile = somefile.read()
-			while True and not opt: #Запрос пароля
-				inf = input("Придумайте логин%s: " % self.flag)
+			while True and opt: #Запрос логина
+				inf = input("Придумайте логин%s: " % self.flag) 
 				aflag = len(inf)
-				if aflag < self.minlognum or aflag > self.maxlognum:
+				if aflag < self.minlognum or aflag > self.maxlognum: # проверяет логин на длинну 
 					printcl("Логин не должен быть короче %d символов или длиннее %d" % (self.minlognum, self.maxlognum))
-				elif any([symbol in inf for symbol in self.illegal]):
+				elif any([symbol in inf for symbol in self.illegal]): #проверяет есть ли там запрещенные символы (которые ввел пользаватель)
 					printcl("Вы ввели ник с запрещеными символами - '%s' " % ", ".join(self.illegal))
 				elif somefile.read() != '':
 					if aflag in dict(x.split(":") for x in myfile.split(";")):
@@ -49,7 +56,7 @@ class LoginSystem:
 						break
 					elif lel.lower() in self.answer_verminus:
 						self.flag = " еще раз"
-			while True and opt: #Запрос логина
+			while True and not opt: #Запрос пароля
 				self.flag = "Теперь п"
 				inf2 = getpass.getpass("%sридумайте пароль: " % self.flag)
 				aflag = len(inf2)
@@ -89,21 +96,15 @@ if tess == "recent":
 	cfg3 = "3-12"
 	cfg4 = '2-20'
 else:
-	cfg1 = inputcl("Название файла и путь к нему(если не указывать путь то файл будет там где программа) - напр. <home/user/passw.txt>:  ")
-	cfg2 = inputcl("Запрещенные символы напр. < /;%] >: ")
-	cfg3 = inputcl("Минимальная и макс. длинна логина - <4-12> : ")
-	cfg4 = inputcl("Минимальная и макс. длинна пароля - <5-16> : ")
-
+	inputy()
 while True:
 	try:
 		get = LoginSystem(cfg1, cfg2, cfg3, cfg4)
 	except:
-		cfg1 = input("Введите ПРАВИЛЬНЫЕ аргументы (как в примере) \n Название файла и путь к нему(если не указывать путь то файл будет там где программа) - напр. <home/user/passw.txt>:  ")
-		cfg2 = inputcl("Запрещенные символы напр. < /;%] >: ")
-		cfg3 = inputcl("Минимальная и макс. длинна логина - <4-12>: ")
-		cfg4 = inputcl("Минимальная и макс. длинна пароля - <5-16>: ")
+		inputy('Введите ПРАВИЛЬНЫЕ аргументы (как в примере) \n ')
 	else:
 		break
 get = LoginSystem(cfg1, cfg2, cfg3, cfg4)
-get.register()
+get.register(True)
+get.register(False)
 get.login()
