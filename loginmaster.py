@@ -1,55 +1,39 @@
 #!/usr/bin/env python3
 import os
 import getpass
-print("Введите конфигурацию программы. Чтобы загрузить базовые значения, напишите recent в консоль")
-tess = input('')
-def printcl(text):
+def printcl(text): # функции - печать и запросс новой строки
 	print(text)
 	os.system('clear')
 def inputcl(text):
 	os.system('clear')
 	return input(text)
-if tess == "recent":
-	cfg1 = "base.txt"
-	cfg2 = "%]/][;:"
-	cfg3 = "3-12"
-	cfg4 = '2-20'
-if tess == '':
-	cfg1 = inputcl("Название файла и путь к нему(если не указывать путь то файл будет там где программа) - напр. <home/user/passw.txt>:  ")
-	cfg2 = inputcl("запрещенные символы напр. </;%]>  :   ")
-	cfg3 = inputcl("минимальная и макс. длинна логина - <4-12> :  ")
-	cfg4 = inputcl("'минимальная и макс. длинна пароля - <5-16> :  ")
 class LoginSystem:
-	flag = "" #Флаги на все
-	flag1 = True #        случаи программы
-	flag2 = "Теперь п"
+	flag = "" #Флаг
 	illegal = [] #Wait, that's illegal!
-	minlognum = 0
-	maxlognum = 0
-	minpasswnum = 0
+	minlognum = 0 #мин. длинна логина
+	maxlognum = 0 #макс. длинна логина
+	minpasswnum = 0 #тоже самое с паролями
 	maxpasswnum = 0
-	answer_versplus = ["yes", "", "go", "да", "ага", "+", "da", 'ok', 'ок']
+	answer_versplus = ["yes", "", "go", "да", "ага", "+", "da", 'ok', 'ок'] # варианты ответа
 	answer_verminus = ["no", "нет", "-", "net"]
-	def __init__(self, stor, symbols, lognum, passwnum): #это для того, чтобы указать: хранилище и путь к ниму
-		self.symbols = symbols
-		self.stor = stor 
+	def __init__(self, stor, symbols, lognum, passwnum): #Инициализация программы. Аргументы для того, чтобы потом указать:
+		self.symbols = symbols # ограничения по длине логина или парля
+		self.stor = stor  #хранилище и путь к ниму
 		for i in self.symbols:
 			self.illegal.append(i)
-		self.illegal = sorted(list(set(self.illegal)), key=self.illegal.index)
-		self.minlognum = int(lognum.split("-")[0])
+		self.illegal = sorted(set(self.illegal), key=self.illegal.index) #исключение одинаковых символов  
+		self.minlognum = int(lognum.split("-")[0]) 
 		self.maxlognum = int(lognum.split("-")[1])
 		self.minpasswnum = int(passwnum.split("-")[0])
 		self.maxpasswnum = int(passwnum.split("-")[1])
-		if all([self.minlognum > self.maxlognum, self.minpasswnum > self.maxpasswnum]):
-			raise
-		test = open(self.stor, 'a+')
-		test.close()
-		del test
-	def register(self):
+		if all([self.minlognum > self.maxlognum, self.minpasswnum > self.maxpasswnum]): #проверяет все ли правильно там
+			raise # прост вызывает ошибку
+		open(self.stor, 'a+') #создает файл если такого не существует
+	def register(self, opt): # регистрация (opt - опция)
 			somefile = open(self.stor, "r+")
 			self.flag = ''
 			myfile = somefile.read()
-			while True:
+			while True and not opt: #Запрос пароля
 				inf = input("Придумайте логин%s: " % self.flag)
 				aflag = len(inf)
 				if aflag < self.minlognum or aflag > self.maxlognum:
@@ -65,8 +49,9 @@ class LoginSystem:
 						break
 					elif lel.lower() in self.answer_verminus:
 						self.flag = " еще раз"
-			while True:
-				inf2 = getpass.getpass("%sридумайте пароль: " % self.flag2)
+			while True and opt: #Запрос логина
+				self.flag = "Теперь п"
+				inf2 = getpass.getpass("%sридумайте пароль: " % self.flag)
 				aflag = len(inf2)
 				if aflag < self.minpasswnum or aflag > self.maxpasswnum:
 					printcl("Допустимая длинна пароля - %d - %d" % (self.minpasswnum, self.maxpasswnum))
@@ -78,11 +63,11 @@ class LoginSystem:
 						break
 					else:
 						printcl("Пароли не совпадают")
-						self.flag2 = "П"
+						self.flag = "П"
 						continue
-			somefile.write((lambda x: '' if x == '' else ';')(somefile.seek(0).read()) + inf + ":" + inf2)
-			somefile.close()
-	def login(self):
+			somefile.write((lambda x: '' if x == '' else ';')(somefile.seek(0).read()) + inf + ":" + inf2) #Добавление в "базу данных"
+			somefile.close() # Закрытие файла
+	def login(self): # Проверяет есть ли логин или пароль в базе
 		while True:
 			self.flag = ''
 			inf = inputcl("Введите логин%s: " % self.flag)
@@ -93,15 +78,30 @@ class LoginSystem:
 				break
 			else:
 				printcl('Неправильный логин или пароль')
-				self.flag = ' еще раз'
+				self.flag = ' еще раз' 
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+print("Введите конфигурацию программы. Enter, чтобы продолжить. Если хотите загрузить базовые значения, напишите recent в консоль")
+tess = input('')
+if tess == "recent":
+	cfg1 = "base.txt"
+	cfg2 = "%]/][;:"
+	cfg3 = "3-12"
+	cfg4 = '2-20'
+else:
+	cfg1 = inputcl("Название файла и путь к нему(если не указывать путь то файл будет там где программа) - напр. <home/user/passw.txt>:  ")
+	cfg2 = inputcl("Запрещенные символы напр. < /;%] >: ")
+	cfg3 = inputcl("Минимальная и макс. длинна логина - <4-12> : ")
+	cfg4 = inputcl("Минимальная и макс. длинна пароля - <5-16> : ")
+
 while True:
 	try:
 		get = LoginSystem(cfg1, cfg2, cfg3, cfg4)
 	except:
-		cfg1 = inputcl("Введите ПРАВИЛЬНЫЕ аргументы (как в примере) \n Название файла и путь к нему(если не указывать путь то файл будет там где программа) - напр. <home/user/passw.txt>:  ")
-		cfg2 = inputcl("запрещенные символы напр. </;%]>  :   ")
-		cfg3 = inputcl("минимальная и макс. длинна логина - <4-12> :  ")
-		cfg4 = inputcl("'минимальная и макс. длинна пароля - <5-16> :  ")
+		cfg1 = input("Введите ПРАВИЛЬНЫЕ аргументы (как в примере) \n Название файла и путь к нему(если не указывать путь то файл будет там где программа) - напр. <home/user/passw.txt>:  ")
+		cfg2 = inputcl("Запрещенные символы напр. < /;%] >: ")
+		cfg3 = inputcl("Минимальная и макс. длинна логина - <4-12>: ")
+		cfg4 = inputcl("Минимальная и макс. длинна пароля - <5-16>: ")
 	else:
 		break
 get = LoginSystem(cfg1, cfg2, cfg3, cfg4)
