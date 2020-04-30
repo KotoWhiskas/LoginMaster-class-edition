@@ -108,3 +108,4 @@ get = LoginSystem(cfg1, cfg2, cfg3, cfg4)
 get.register(True)
 get.register(False)
 get.login()
+#s[(len(s)-1)/2:len(s)/2+1]
